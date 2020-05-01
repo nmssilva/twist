@@ -1,5 +1,8 @@
+.idea
+kokubi*
 devel/
 logs/
+.idea
 build/
 bin/
 lib/
