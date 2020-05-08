@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>twist</name>
+  <version>0.0.0</version>
+  <description>The TWIST package</description>
+
+  <maintainer email="didmpereira@gmail.com">David</maintainer>
+  <maintainer email="emanuel.teixeira@criticaltechworks.com">Emanuel</maintainer>
+  <maintainer email="luisfiliperdias@gmail.com">Luis</maintainer>
+  <maintainer email="numisosil@gmail.com">Nuno</maintainer>
+
+  <license>GPLv3</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+
+  <export>
+  </export>
+</package>
