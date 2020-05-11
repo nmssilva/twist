@@ -11,12 +11,8 @@
 #include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 
-/**
- * @ingroup twist
- *
- * Namespace for all TWIST modules
- */
 namespace twist {
+namespace business {
 
 bool hit{false};
 
@@ -62,4 +58,5 @@ InitManager::InitManager(ros::NodeHandle& nodeHandle)
     }
 }
 
+}  // namespace business
 }  // namespace twist

@@ -10,15 +10,10 @@
 
 #include <ros/node_handle.h>
 
-/**
- * @ingroup twist
- *
- * Namespace for all TWIST modules
- */
 namespace twist {
 
 Application::Application(ros::NodeHandle& nodeHandle)
-    : initManager(std::make_unique<InitManager>(nodeHandle)) {
+    : initManager(std::make_unique<business::InitManager>(nodeHandle)) {
 }
 
 }  // namespace twist
