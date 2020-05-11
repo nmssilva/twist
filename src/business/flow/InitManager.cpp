@@ -9,8 +9,6 @@
 #include "business/flow/InitManager.h"
 
 #include <ros/ros.h>
-#include <turtlesim/Color.h>
-#include <turtlesim/Pose.h>
 #include <geometry_msgs/Twist.h>
 
 /**
@@ -22,16 +20,6 @@ namespace twist {
 
 bool hit{false};
 
-void pose_callback(const turtlesim::Pose& pose) {
-    ROS_INFO("Position update. x=[%f], y=[%f]", pose.x, pose.y);
-    if(pose.x <= 0 || pose.y <= 0 || pose.x >= 11 || pose.y >= 11) {
-        ROS_INFO("HIT");
-        hit = true;
-    } else {
-        hit = false;
-    }
-}
-
 InitManager::InitManager(ros::NodeHandle& nodeHandle)
     : nodeHandle(nodeHandle) {
     ROS_INFO("Initializing Init Manager");
@@ -40,7 +28,6 @@ InitManager::InitManager(ros::NodeHandle& nodeHandle)
     {
         const auto pub{nodeHandle.advertise<geometry_msgs::Twist>("/cmd_vel", 1000)};
         // TODO - replace with laserscan
-        const auto sub{nodeHandle.subscribe("/turtle1/pose", 1000, pose_callback)};
 
         ros::Rate loop_rate(100);
 
