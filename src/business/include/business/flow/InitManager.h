@@ -17,6 +17,13 @@
  */
 namespace twist {
 
+/**
+ * @ingroup twist
+ *
+ * Namespace for all business modules
+ */
+namespace business {
+
 class InitManager {
 
 public:
@@ -37,4 +44,5 @@ private:
 
 };
 
-}  // namespace application
+}  // namespace business
+}  // namespace twist

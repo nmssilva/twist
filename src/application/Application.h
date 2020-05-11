@@ -34,7 +34,7 @@ public:
     ~Application() = default;
 
 private:
-    std::unique_ptr<InitManager> initManager;
+    std::unique_ptr<business::InitManager> initManager;
 };
 
 }  // namespace twist
