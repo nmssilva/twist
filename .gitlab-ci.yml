@@ -1,0 +1,48 @@
+image: ros:melodic-ros-core
+
+cache:
+  paths:
+    - ccache/
+
+before_script:
+ - git clone https://gitlab.com/VictorLamoine/ros_gitlab_ci.git
+ - source ros_gitlab_ci/gitlab-ci.bash >/dev/null
+
+catkin_make:
+  stage: build
+  script:
+    - catkin_make
+
+catkin build:
+  stage: build
+  script:
+    - catkin build --summarize --no-status --force-color
+  artifacts:
+    paths:
+      - 'catkin_workspace/build'
+      - 'catkin_workspace/devel'
+    expire_in: 4 hrs
+
+catkin lint:
+  stage: test
+  image: ros:melodic-ros-core
+  needs: []
+  script:
+    - catkin_lint -W3 .
+
+catkin_make tests:
+  stage: test
+  script:
+    - catkin_make run_tests
+    - catkin_test_results # Check if one of the tests failed!
+  dependencies: [] # Do not download artifacts (they were created with catkin tools)
+
+catkin run_tests:
+  stage: test
+  script:
+    - source devel/setup.bash
+    - catkin run_tests --no-status --force-color | sed -En '/^-- run_tests.py/,/^-- run_tests.py/p'
+    - catkin_test_results # Check if one of the tests failed!
+  needs:
+    - job: catkin build
+      artifacts: true
