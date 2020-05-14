@@ -3,6 +3,8 @@ project(twist)
 
 add_compile_options(-std=c++17)
 
+include(cmake/TestUtils.cmake)
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
