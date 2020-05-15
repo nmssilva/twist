@@ -11,6 +11,7 @@
 #include "Application.h"
 
 #include "ros/ros.h"
+#include "common/Logging.h"
 
 /**
  * Application entry point
@@ -23,7 +24,7 @@ int main(int argc, char** argv) {
 
     ros::NodeHandle nodeHandle;
 
-    ROS_INFO("TWIST bring-up...");
+    LOG_INFO("Bring-up...");
 
     // Application is created, and is only destroyed when we stop spinning
     twist::Application application(nodeHandle);

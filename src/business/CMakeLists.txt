@@ -4,10 +4,12 @@ Message("-- Generating objects for ${PROJECT_NAME}")
 
 set(HEADERS
         include/business/flow/InitManager.h
+        flow/NavigationManager.h
         )
 
 set(SOURCES
         flow/InitManager.cpp
+        flow/NavigationManager.cpp
         )
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})
@@ -19,4 +21,5 @@ target_include_directories(${PROJECT_NAME} INTERFACE
         include)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
+        TWIST::Common
         ${catkin_LIBRARIES})

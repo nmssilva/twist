@@ -19,13 +19,13 @@ public:
     }
 
 protected:
-    ros::NodeHandle nodeHandle{};
+    ros::NodeHandle nodeHandle;
     std::shared_ptr<twist::business::InitManager> victim;
 };
 
 /**
- * DummyTest: dummyTest.
+ * objectNotNull: assert object creation succeeded
  */
-TEST_F(InitManagerTest, DummyTest) {
+TEST_F(InitManagerTest, objectNotNull) {
     ASSERT_NE(victim, nullptr);
 }

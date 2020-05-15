@@ -14,6 +14,8 @@ namespace twist {
 
 Application::Application(ros::NodeHandle& nodeHandle)
     : initManager(std::make_unique<business::InitManager>(nodeHandle)) {
+
+    initManager->init();
 }
 
 }  // namespace twist

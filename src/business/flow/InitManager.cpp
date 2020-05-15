@@ -8,15 +8,24 @@
 
 #include "business/flow/InitManager.h"
 
+#include <geometry_msgs/PoseStamped.h>
 #include <ros/ros.h>
 
-namespace twist {
-namespace business {
+#include "common/Logging.h"
+
+namespace twist::business {
 
 InitManager::InitManager(ros::NodeHandle& nodeHandle)
     : nodeHandle(nodeHandle) {
-    ROS_INFO("Initializing Init Manager");
+    LOG_INFO("Initializing Init Manager");
+
+    init();
 }
 
-}  // namespace business
-}  // namespace twist
+void InitManager::init() {
+    if (!navigationManager) {
+        navigationManager = std::make_shared<NavigationManager>(nodeHandle);
+    }
+}
+
+}  // namespace twist::business
