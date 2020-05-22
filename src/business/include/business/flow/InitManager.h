@@ -10,6 +10,8 @@
 
 #include <ros/node_handle.h>
 
+#include "../../../flow/NavigationManager.h"
+
 /**
  * @ingroup twist
  *
@@ -25,7 +27,6 @@ namespace twist {
 namespace business {
 
 class InitManager {
-
 public:
     /**
      * Constructor
@@ -39,9 +40,15 @@ public:
      */
     ~InitManager() = default;
 
+    /**
+     * Initializer for each of the managers
+     */
+    void init();
+
 private:
     ros::NodeHandle nodeHandle;
 
+    std::shared_ptr<NavigationManager> navigationManager;
 };
 
 }  // namespace business

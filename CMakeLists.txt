@@ -3,15 +3,23 @@ project(twist)
 
 add_compile_options(-std=c++17)
 
-include(cmake/TestUtils.cmake)
-
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  std_msgs
+        message_generation
+        roscpp
+        rospy
+        rostest
+        std_msgs
+)
+
+add_message_files(FILES
+        target.msg
+)
+
+generate_messages(DEPENDENCIES
+        std_msgs
 )
 
 ###################################
@@ -23,8 +31,12 @@ find_package(catkin REQUIRED COMPONENTS
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
-        CATKIN_DEPENDS roscpp rospy std_msgs
+catkin_package(CATKIN_DEPENDS
+        message_runtime
+        roscpp
+        rospy
+        rostest
+        std_msgs
 )
 
 add_subdirectory(src)
