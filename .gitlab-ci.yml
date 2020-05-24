@@ -13,7 +13,6 @@ after_script:
 
 stages:
   - test
-  - analyze
 
 build_and_test:
   stage: test
@@ -31,19 +30,3 @@ build_and_test:
     paths:
     - $WS_NAME/
     expire_in: 1 day
-
-coverage_twist:
-  stage: analyze
-  dependencies:
-  - build_and_test
-  script:
-  - cd $WS_NAME && rosdep install --from-paths src -i -y --as-root apt:false
-  - catkin build
-  - catkin run_tests
-  - gcovr -r .
-  - lcov --capture --directory . --output-file $CI_PROJECT_DIR/coverage.info
-  - genhtml $CI_PROJECT_DIR/coverage.info --output-directory $CI_PROJECT_DIR/twist_coverage
-  artifacts:
-    name: twist_coverage
-    paths:
-    - $CI_PROJECT_DIR/twist_coverage/
