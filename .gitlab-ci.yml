@@ -1,48 +1,49 @@
-image: ros:melodic-ros-core
+image: registry.gitlab.com/jlack/rdl:ci-docker-melodic
 
-cache:
-  paths:
-    - ccache/
+variables:
+  WS_NAME: "twist_ws"
 
 before_script:
- - git clone https://gitlab.com/VictorLamoine/ros_gitlab_ci.git
- - source ros_gitlab_ci/gitlab-ci.bash >/dev/null
+  - apt-get update -qq -y
+  - apt-get upgrade -y
+  - rosdep update
 
-catkin_make:
-  stage: build
-  script:
-    - catkin_make
+after_script:
+  - bash <(curl -s https://codecov.io/bash) -t "7993cded-c9de-4336-b792-7c1abbbf6f34"
 
-catkin build:
-  stage: build
+stages:
+  - test
+  - analyze
+
+build_and_test:
+  stage: test
+  retry: 1
   script:
-    - catkin build --summarize --no-status --force-color
+    - echo $CI_PROJECT_NAME
+    - mkdir -p $WS_NAME/src && cd $WS_NAME/src
+    - git clone -b ${CI_COMMIT_REF_NAME} ${CI_REPOSITORY_URL}
+    - cd .. && rosdep install --from-paths src -i -y --as-root apt:false
+    - catkin config --init --mkdirs --install --extend /opt/ros/$ROS_DISTRO
+    - catkin build
+    - catkin run_tests
+    - catkin_test_results build/
   artifacts:
     paths:
-      - 'catkin_workspace/build'
-      - 'catkin_workspace/devel'
-    expire_in: 4 hrs
+    - $WS_NAME/
+    expire_in: 1 day
 
-catkin lint:
-  stage: test
-  image: ros:melodic-ros-core
-  needs: []
+coverage_twist:
+  stage: analyze
+  dependencies:
+  - build_and_test
   script:
-    - catkin_lint -W3 .
-
-catkin_make tests:
-  stage: test
-  script:
-    - catkin_make run_tests
-    - catkin_test_results # Check if one of the tests failed!
-  dependencies: [] # Do not download artifacts (they were created with catkin tools)
-
-catkin run_tests:
-  stage: test
-  script:
-    - source devel/setup.bash
-    - catkin run_tests --no-status --force-color | sed -En '/^-- run_tests.py/,/^-- run_tests.py/p'
-    - catkin_test_results # Check if one of the tests failed!
-  needs:
-    - job: catkin build
-      artifacts: true
+  - cd $WS_NAME && rosdep install --from-paths src -i -y --as-root apt:false
+  - catkin build
+  - catkin run_tests
+  - gcovr -r .
+  - lcov --capture --directory . --output-file $CI_PROJECT_DIR/coverage.info
+  - genhtml $CI_PROJECT_DIR/coverage.info --output-directory $CI_PROJECT_DIR/twist_coverage
+  artifacts:
+    name: twist_coverage
+    paths:
+    - $CI_PROJECT_DIR/twist_coverage/
