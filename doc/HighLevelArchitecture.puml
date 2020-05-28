@@ -1,0 +1,86 @@
+@startuml TechWorks Intelligent Support Teammate
+
+title High Level Architecture - TechWorks Intelligent Support Teammate
+
+actor "User" as user
+
+note top of ros_navigation_stack
+<b>ROS Navigation Stack</b>
+  <b>amcl:</b>
+  - Probabilistic localization system for a robot moving in 2D;
+  - Implements adaptive (or KLD-sampling) Monte Carlo localization;
+  - Uses a particle filter to track the pose against a known map;
+
+  <b>move_base:</b>
+  - Provides an implementation of an action that, given a goal in
+  the world, will attempt to reach it with a mobile base.
+  - Links a global and local planner to accomplish its global navigation task;
+  - Supports any global planner adhering to the nav_core::BaseGlobalPlanner interface;
+  - Supports any local planner adhering to the nav_core::BaseLocalPlanner interface;
+  - Maintains two costmaps, one for the global planner, and one for a local planner;
+end note
+
+note bottom of twist_node
+    The target topic provides an entry point to the robot, where a destination is
+    provided, like "go to Room A" or "go to Room B".
+    The interface receives a known location and the TWIST node converts it into
+    coordinates to be fed to the move_base node.
+    The move_base node then converts the location into cmd_vel commands, which
+    reaches the motors in the TurtleBot Gazebo instance and commands the motion.
+end note
+
+frame "TWIST App" as twist_app #AADD22 {
+}
+
+frame "ROS Master Terminal" as master_terminal #777777 {
+
+}
+
+frame "Pulsar API" as pulsar_api #EE0000 {
+
+}
+
+frame "Robot" as twist_robot {
+    frame "TWIST package" as twist_package {
+        frame "TWIST node" as twist_node {
+            node "Navigation Manager" as navigation_manager
+            node "Pulsar Manager" as pulsar_manager
+            node "Android Manager" as android_manager
+        }
+    }
+
+    frame "ROS Navigation Stack" as ros_navigation_stack {
+        node "amcl" as amcl
+        node "move_base" as move_base
+    }
+
+    frame "TurtleBot" as turtlebot {
+        node "TurtleBot Gazebo" as turtlebot_gazebo
+    }
+
+    frame "Map Server" as map_server {
+        node "MapServer" as map_server_node
+    }
+}
+
+user -->> master_terminal : <b>cmd</b>
+user -->> twist_app : <b>Android</b>
+user -->> pulsar_api : indirect\ninteraction
+
+master_terminal -->> navigation_manager : <b>/target</b>
+twist_app -->> android_manager
+pulsar_api <<-->> pulsar_manager
+
+navigation_manager -->> move_base : <b>/move_base_simple/goal</b>
+turtlebot_gazebo -->> amcl : <b>/tf</b>
+amcl -->> move_base : <b>/tf adapted</b>
+move_base -->> turtlebot_gazebo : <b>/cmd_vel/goal</b>
+turtlebot_gazebo -->> move_base : <b>/odom</b>
+turtlebot_gazebo -->> move_base : <b>/scan</b>
+map_server -->> move_base :<b>/map</b>
+
+android_manager <<-->> navigation_manager
+android_manager <<-->> pulsar_manager
+navigation_manager <<-->> pulsar_manager
+
+@enduml
