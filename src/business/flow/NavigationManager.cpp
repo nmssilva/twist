@@ -29,9 +29,15 @@ void NavigationManager::setGoalFromTargetCallback(const std_msgs::String::ConstP
 
     geometry_msgs::PoseStamped poseStamped;
     poseStamped.header.frame_id = "map";
-    poseStamped.pose.position.x = LocationMap.at(locationConversion(target->data)).first;
-    poseStamped.pose.position.y = LocationMap.at(locationConversion(target->data)).second;
-    poseStamped.pose.orientation.w = 1;
+
+    try {
+        poseStamped.pose.position.x = LocationMap.at(locationConversion(target->data)).first;
+        poseStamped.pose.position.y = LocationMap.at(locationConversion(target->data)).second;
+        poseStamped.pose.orientation.w = 1;
+    } catch (const std::exception& e) {
+        LOG_ERROR("Unknown location" << e.what());
+    }
+
 
     moveGoalPublisher.publish(poseStamped);
 }

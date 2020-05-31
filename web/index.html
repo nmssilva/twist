@@ -1,0 +1,216 @@
+<!DOCTYPE HTML>
+<!--
+    Stellar by HTML5 UP
+    html5up.net | @ajlkn
+    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+    <head>
+        <title>TWIST</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <link rel="stylesheet" href="assets/css/main.css" />
+        <link rel="icon" href="images/icon-transparent.png"/>
+        <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+        <script type="text/javascript" src="https://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    </head>
+    <body class="is-preload">
+        <!-- Wrapper -->
+            <div id="wrapper">
+                <!-- Header -->
+                    <header id="header" class="alt">
+                        <p>
+                            <span class="logo"><img src="images/twist-transparent.png" alt="" width="550"/></span>
+                            a <a href="https://fikalab.critical.pt"><b>Fikalab</b></a> project<br/>
+                            by <b>David Pereira</b>, <b>Emanuel Teixeira</b>, <b>Luis Dias</b> & <b>Nuno Silva</b><br/>
+                        </p>
+                    </header>
+                <!-- Nav -->
+                    <nav id="nav">
+                        <ul>
+                            <li><a href="#intro" class="active">Introduction</a></li>
+                            <li><a href="#roomfinder">Room Finder</a></li>
+                            <li><a href="#personfinder">Looking For Someone</a></li>
+                            <li><a href="#jabrarequestor">Bring me a Jabra/Marker</a></li>
+                        </ul>
+                    </nav>
+
+                <!-- Main -->
+                    <div id="main">
+                        <!-- Introduction -->
+                            <section id="intro" class="main">
+                                <div class="spotlight">
+                                    <div class="content">
+                                        <header class="major">
+                                            <h2>TWIST who?</h2>
+                                        </header>
+                                        <p>
+                                            TechWorks Intelligent Support Teammate is a personal assistant, that
+                                            will interact and supports it's surrounding community, in multiple ways.<br/>
+                                            It will be capable of:
+                                            <ul>
+                                                <li>Indicate user the location of multiple rooms;</li>
+                                                <li>Indicate the working station of a specific person;</li>
+                                                <li>Accompany the users to the locations;</li>
+                                                <li>Distribute conference call HW to requestors;</li>
+                                                <li>Speak out any of the informations above;</li>
+                                            </ul>
+                                    </div>
+                                    <span class="image"><img src="images/icon.png" alt="" /></span>
+                                </div>
+                            </section>
+                        <!-- Room Finder -->
+                        <section id="roomfinder" class="main special">
+                            <header class="major">
+                                <h2>Room Finder</h2>
+                                <p>Find a room in the floor.</p>
+                            </header>
+                            <select name="locations" id="targetLocation">
+                                <option value="BedRoom1">Bed Room 1</option>
+                                <option value="BedRoom2">Bed Room 2</option>
+                                <option value="DinningRoom">Dinning Room</option>
+                                <option value="Hall">Hall</option>
+                                <option value="LivingRoom">Living Room</option>
+                                <option value="Outside">Outside</option>
+                                <option value="Kitchen1">Kitchen 1</option>
+                                <option value="Kitchen2">Kitchen 2</option>
+                            </select>
+
+                            <script type="text/javascript">
+                                var ros = new ROSLIB.Ros({
+                                    url: 'ws://localhost:9090'
+                                });
+                                ros.on('connection', function () {
+                                    console.log('Connected to websocket server.');
+                                });
+                                ros.on('error', function (error) {
+                                    console.log('Error connecting to websocket server: ', error);
+                                });
+                                ros.on('close', function () {
+                                    console.log('Connection to websocket server closed.');
+                                });
+                                var target = new ROSLIB.Topic({
+                                    ros: ros,
+                                    name: '/target',
+                                    messageType: 'std_msgs/String'
+                                });
+                                function getTarget() {
+                                    var location = document.getElementById("targetLocation").value;
+                                    console.log("Publishing go to " + location);
+                                    target.publish(new ROSLIB.Message({data: location}));
+                                }
+                            </script>
+                            <footer class="major">
+                                <ul class="actions special">
+                                    <li><a class="button primary" onclick="getTarget()">Go</a></li>
+                                </ul>
+                            </footer>
+                        </section>
+                        <!-- Person Finder -->
+                            <section id="personfinder" class="main special">
+                                <header class="major">
+                                    <h2>Looking for someone?</h2>
+                                </header>
+                                <ul class="features">
+                                    <li>
+                                        <span class="icon solid major style1 fa-code"></span>
+                                        <h3>Ipsum consequat</h3>
+                                        <p>Sed lorem amet ipsum dolor et amet nullam consequat a feugiat consequat tempus veroeros sed consequat.</p>
+                                    </li>
+                                    <li>
+                                        <span class="icon major style3 fa-copy"></span>
+                                        <h3>Amed sed feugiat</h3>
+                                        <p>Sed lorem amet ipsum dolor et amet nullam consequat a feugiat consequat tempus veroeros sed consequat.</p>
+                                    </li>
+                                    <li>
+                                        <span class="icon major style5 fa-gem"></span>
+                                        <h3>Dolor nullam</h3>
+                                        <p>Sed lorem amet ipsum dolor et amet nullam consequat a feugiat consequat tempus veroeros sed consequat.</p>
+                                    </li>
+                                </ul>
+                            </section>
+                        <!-- Jabra Requestor -->
+                        <section id="jabrarequestor" class="main special">
+                            <header class="major">
+                                <h2>Bring me a Jabra/Marker</h2>
+                                <p>Where to?</p>
+                            </header>
+                            <select name="locations" id="jabraLocation">
+                                <option value="BedRoom1">Bed Room 1</option>
+                                <option value="BedRoom2">Bed Room 2</option>
+                                <option value="DinningRoom">Dinning Room</option>
+                                <option value="Hall">Hall</option>
+                                <option value="LivingRoom">Living Room</option>
+                                <option value="Outside">Outside</option>
+                                <option value="Kitchen1">Kitchen 1</option>
+                                <option value="Kitchen2">Kitchen 2</option>
+                            </select>
+                            <script type="text/javascript">
+                                var ros = new ROSLIB.Ros({
+                                    url: 'ws://localhost:9090'
+                                });
+                                ros.on('connection', function () {
+                                    console.log('Connected to websocket server.');
+                                });
+                                ros.on('error', function (error) {
+                                    console.log('Error connecting to websocket server: ', error);
+                                });
+                                ros.on('close', function () {
+                                    console.log('Connection to websocket server closed.');
+                                });
+                                var target = new ROSLIB.Topic({
+                                    ros: ros,
+                                    name: '/target',
+                                    messageType: 'std_msgs/String'
+                                });
+                                function getTarget() {
+                                    var location = document.getElementById("jabraLocation").value;
+                                    console.log("Publishing go to " + location);
+                                    target.publish(new ROSLIB.Message({data: location}));
+                                }
+                            </script>
+                            <footer class="major">
+                                <ul class="actions special">
+                                    <li><a class="button primary" onclick="getTarget()">Get a Jabra/Marker</a></li>
+                                </ul>
+                            </footer>
+                        </section>
+                <!-- Footer -->
+                    <footer id="footer">
+                        <section>
+                            <h2>Contacts:</h2>
+                            <dl class="alt">
+                                <dt>Address</dt>
+                                <dd>Rua Dr. António Luís Gomes, nº 10 &bull; 4000-124, Porto &bull; Portugal</dd>
+                                <dt>Phone</dt>
+                                <dd>(+351) 927856393</dd>
+                                <dt>Email</dt>
+                                <dd><a href="#">david.pereira@criticaltechworks.com</a></dd>
+                                <dd><a href="#">emanuel.teixeira@criticaltechworks.com</a></dd>
+                                <dd><a href="#">luis.ribeiro.dias@criticaltechworks.com</a></dd>
+                                <dd><a href="#">nuno.silva@criticaltechworks.com</a></dd>
+                            </dl>
+                            <ul class="icons">
+                                <li><a href="#" class="icon brands fa-twitter alt"><span class="label">Twitter</span></a></li>
+                                <li><a href="#" class="icon brands fa-facebook-f alt"><span class="label">Facebook</span></a></li>
+                                <li><a href="#" class="icon brands fa-instagram alt"><span class="label">Instagram</span></a></li>
+                                <li><a href="#" class="icon brands fa-github alt"><span class="label">GitHub</span></a></li>
+                                <li><a href="#" class="icon brands fa-dribbble alt"><span class="label">Dribbble</span></a></li>
+                            </ul>
+                        </section>
+                        <p class="copyright">&copy; Untitled. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+                    </footer>
+               </div>
+            </div>
+
+        <!-- Scripts -->
+            <script src="assets/js/jquery.min.js"></script>
+            <script src="assets/js/jquery.scrollex.min.js"></script>
+            <script src="assets/js/jquery.scrolly.min.js"></script>
+            <script src="assets/js/browser.min.js"></script>
+            <script src="assets/js/breakpoints.min.js"></script>
+            <script src="assets/js/util.js"></script>
+            <script src="assets/js/main.js"></script>
+
+    </body>
+</html>
