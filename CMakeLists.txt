@@ -7,7 +7,6 @@ add_compile_options(-std=c++17)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-        code_coverage
         message_generation
         roscpp
         rospy
@@ -39,9 +38,6 @@ catkin_package(CATKIN_DEPENDS
         rostest
         std_msgs
         )
-
-# Add compiler flags for coverage instrumentation before defining any targets
-append_coverage_compiler_flags()
 
 add_subdirectory(src)
 add_subdirectory(test)
