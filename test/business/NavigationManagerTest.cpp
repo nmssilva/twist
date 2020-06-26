@@ -66,4 +66,13 @@ TEST_F(NavigationManagerTest, topicConversionTest) {
 
         it++;
     }
+
+    // Test invalid location
+    {
+        std_msgs::String msg;
+        msg.data = "China";
+        publisher.publish(msg);
+        usleep(spinDelayUs);
+        ros::spinOnce();
+    }
 }
