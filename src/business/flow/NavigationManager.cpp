@@ -9,10 +9,9 @@
 #include <thread>
 
 #include <geometry_msgs/PoseStamped.h>
-#include <ros/ros.h>
 
 #include "business/flow/InitManager.h"
-#include "common/Mapping.h"
+#include "common/Configs.h"
 #include "common/Logging.h"
 
 namespace twist::business {
@@ -31,19 +30,17 @@ void NavigationManager::setGoalFromTargetCallback(const std_msgs::String::ConstP
     poseStamped.header.frame_id = "map";
 
     try {
-        poseStamped.pose.position.x = LocationMap.at(locationConversion(target->data)).first;
-        poseStamped.pose.position.y = LocationMap.at(locationConversion(target->data)).second;
-        poseStamped.pose.orientation.w = 1;
+        const auto locations{common::Configs::getValues().locations.at(static_cast<uint32_t>(common::locationConversion(target->data)))};
+
+        poseStamped.pose.position.x = locations.x;
+        poseStamped.pose.position.y = locations.y;
+        poseStamped.pose.orientation.z = locations.z;
+        poseStamped.pose.orientation.w = locations.w;
     } catch (const std::exception& e) {
-        LOG_ERROR("Unknown location" << e.what());
+        LOG_ERROR("Unknown location for " << target->data <<" with error:" << e.what());
     }
 
-
     moveGoalPublisher.publish(poseStamped);
-}
-
-std::map<Location, std::pair<x, y>>& NavigationManager::getLocationMap() {
-    return LocationMap;
 }
 
 }  // namespace twist::business

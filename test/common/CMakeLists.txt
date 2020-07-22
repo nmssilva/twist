@@ -8,3 +8,10 @@ target_link_libraries(MappingTest
         ${catkin_LIBRARIES}
         Tests::TestMain
 )
+
+catkin_add_gtest(ConfigsTest ConfigsTest.cpp)
+target_link_libraries(ConfigsTest
+        ${catkin_LIBRARIES}
+        Tests::TestMain
+        TWIST::Common
+        )

@@ -9,17 +9,21 @@
 #include "business/flow/InitManager.h"
 
 #include <geometry_msgs/PoseStamped.h>
-#include <ros/ros.h>
 
+#include "common/Configs.h"
 #include "common/Logging.h"
 
 namespace twist::business {
 
 InitManager::InitManager(ros::NodeHandle& nodeHandle)
     : nodeHandle(nodeHandle) {
-    LOG_INFO("Initializing Init Manager");
+    if (common::Configs::parseConfigFile()) {
+        LOG_INFO("Initializing Init Manager");
 
-    init();
+        init();
+    } else {
+        LOG_ERROR("Failed to parse configs");
+    }
 }
 
 void InitManager::init() {

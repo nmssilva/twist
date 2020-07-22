@@ -89,12 +89,6 @@ public:
      */
     ~NavigationManager() = default;
 
-    /**
-     * Getter for location map, for test purposes
-     * @return location map
-     */
-    [[nodiscard]] std::map<Location, std::pair<x, y>> &getLocationMap();
-
 private:
     /**
      * Callback to set the goal based on target provided
@@ -108,17 +102,6 @@ private:
     ros::Publisher moveGoalPublisher;
     ros::Subscriber getTargetSubscriber;
 
-    /**
-     * Map between locations and coordinates
-     */
-    std::map<Location, std::pair<x, y>> LocationMap{{Location::Kitchen1, std::make_pair(3.3, 2.2)},
-                                                    {Location::Kitchen2, std::make_pair(1.1, 3.2)},
-                                                    {Location::LivingRoom, std::make_pair(-1.3, 2.3)},
-                                                    {Location::DinningRoom, std::make_pair(5.6, -4.4)},
-                                                    {Location::BedRoom1, std::make_pair(-6.1, 3.2)},
-                                                    {Location::BedRoom2, std::make_pair(-6.4, -0.7)},
-                                                    {Location::Outside, std::make_pair(-0.7, -3.5)},
-                                                    {Location::Hall, std::make_pair(0.3, 0.3)}};
 };
 
 }  // namespace business
