@@ -22,31 +22,32 @@
     <arg name="z_pos" default="0.0"/>
     <arg name="move_forward_only" default="false"/>
 
-    <!-- Model description -->
-    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
-
-    <!-- Gazebo spawn -->
-    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
-
-    <!-- TurtleBot bringup -->
-    <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
-      <arg name="model" value="$(arg model)" />
-    </include>
-
-    <!-- If SLAM enabled - make sure to launch teleop for remote control to be able to get the SLAM data -->
-    <!-- Map saver - once the teleop is finished launch >> rosrun map_server map_saver -f ~/map -->
-    <group if="$(arg slam)">
-        <group unless="$(arg navigation)">
-            <!-- SLAM: Gmapping, Cartographer, Hector, Karto, Frontier_exploration, RTAB-Map -->
-            <include file="$(find turtlebot3_slam)/launch/turtlebot3_$(arg slam_methods).launch">
-                <arg name="model" value="$(arg model)"/>
-                <arg name="configuration_basename" value="$(arg configuration_basename)"/>
-            </include>
-        </group>
-    </group>
 
     <group if="$(arg sim)">
-        <group if="$(arg location_house)">
+        <!-- Model description -->
+        <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+    	<!-- Gazebo spawn -->
+       <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+
+        <!-- TurtleBot bringup -->
+        <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+            <arg name="model" value="$(arg model)" />
+        </include>
+        
+        <!-- If SLAM enabled - make sure to launch teleop for remote control to be able to get the SLAM data -->
+        <!-- Map saver - once the teleop is finished launch >> rosrun map_server map_saver -f ~/map -->
+        <group if="$(arg slam)">
+            <group unless="$(arg navigation)">
+                <!-- SLAM: Gmapping, Cartographer, Hector, Karto, Frontier_exploration, RTAB-Map -->
+                <include file="$(find turtlebot3_slam)/launch/turtlebot3_$(arg slam_methods).launch">
+                    <arg name="model" value="$(arg model)"/>
+                    <arg name="configuration_basename" value="$(arg configuration_basename)"/>
+                </include>
+            </group>
+        </group>
+
+	<group if="$(arg location_house)">
             <include file="$(find gazebo_ros)/launch/empty_world.launch">
                 <arg name="paused" value="$(arg paused)"/>
                 <arg name="use_sim_time" value="$(arg use_sim_time)"/>
