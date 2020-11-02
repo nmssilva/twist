@@ -23,18 +23,10 @@
     <arg name="move_forward_only" default="false"/>
 
 
-    <group if="$(arg sim)">
         <!-- Model description -->
         <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
 
-    	<!-- Gazebo spawn -->
-       <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
 
-        <!-- TurtleBot bringup -->
-        <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
-            <arg name="model" value="$(arg model)" />
-        </include>
-        
         <!-- If SLAM enabled - make sure to launch teleop for remote control to be able to get the SLAM data -->
         <!-- Map saver - once the teleop is finished launch >> rosrun map_server map_saver -f ~/map -->
         <group if="$(arg slam)">
@@ -46,6 +38,18 @@
                 </include>
             </group>
         </group>
+
+    <group if="$(arg sim)">
+
+        <!-- TurtleBot bringup -->
+        <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+            <arg name="model" value="$(arg model)" />
+        </include>
+
+    	<!-- Gazebo spawn -->
+       <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+
+        
 
 	<group if="$(arg location_house)">
             <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -104,7 +108,7 @@
             <arg name="scan_topic" value="/scan" />
         </include>
 
-        <!-- AMCL -->
+        <!-- AMCL --> 
         <include file="$(find turtlebot3_navigation)/launch/amcl.launch"/>
 
         <!-- move_base -->
@@ -124,7 +128,7 @@
     <!-- If webserver enabled -->
     <group if="$(arg webserver)">
         <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
-    </group> -->
+    </group>
 
     <!-- TWIST node bring-up -->
     <node pkg="twist" type="Application" required="true" output="screen" name="twist"></node>
