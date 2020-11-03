@@ -5,7 +5,6 @@
     <arg name="slam" default="false"/>
     <arg name="navigation" default="true"/>
     <arg name="webserver" default="true"/>
-    <arg name="location_house" default="false"/>
 
     <!-- Arguments -->
     <arg name="slam_methods" default="gmapping" doc="slam type [gmapping, cartographer, hector, karto, frontier_exploration]"/>
@@ -20,30 +19,20 @@
     <arg name="x_pos" default="1"/>
     <arg name="y_pos" default="-0.286"/>
     <arg name="z_pos" default="0.0"/>
+    <arg name="map_file" default="$(find twist)/maps/office_map.yaml"/>
+    <!-- <arg name="map_file" default="$(find twist)/maps/house_map.yaml"/>-->
     <arg name="move_forward_only" default="false"/>
 
     <group if="$(arg sim)">
-        <group if="$(arg location_house)">
-            <include file="$(find gazebo_ros)/launch/empty_world.launch">
-                <arg name="paused" value="$(arg paused)"/>
-                <arg name="use_sim_time" value="$(arg use_sim_time)"/>
-                <arg name="gui" value="$(arg gui)"/>
-                <arg name="headless" value="$(arg headless)"/>
-                <arg name="debug" value="$(arg debug)"/>
-                <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_house.world"/>
-            </include>
-        </group>
-
-        <group unless="$(arg location_house)">
-            <include file="$(find gazebo_ros)/launch/empty_world.launch">
-                <arg name="paused" value="$(arg paused)"/>
-                <arg name="use_sim_time" value="$(arg use_sim_time)"/>
-                <arg name="gui" value="$(arg gui)"/>
-                <arg name="headless" value="$(arg headless)"/>
-                <arg name="debug" value="$(arg debug)"/>
-                <arg name="world_name" value="$(find twist)/worlds/office.world"/>
-            </include>
-        </group>
+        <include file="$(find gazebo_ros)/launch/empty_world.launch">
+            <arg name="paused" value="$(arg paused)"/>
+            <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+            <arg name="gui" value="$(arg gui)"/>
+            <arg name="headless" value="$(arg headless)"/>
+            <arg name="debug" value="$(arg debug)"/>
+            <!--<arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_house.world"/>-->
+            <arg name="world_name" value="$(find twist)/worlds/office.world"/>
+        </include>
 
         <!-- Model description -->
         <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
@@ -71,12 +60,7 @@
         <!-- If navigation enabled -->
         <group if="$(arg navigation)">
             <!-- Map server -->
-            <group if="$(arg location_house)">
-                <node pkg="map_server" name="map_server" type="map_server" args="(find twist)/maps/house_map.yaml"/>
-            </group>
-            <group unless="$(arg location_house)">
-                <node pkg="map_server" name="map_server" type="map_server" args="(find twist)/maps/office_map.yaml"/>
-            </group>
+            <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
 
             <!-- AMCL -->
             <include file="$(find turtlebot3_navigation)/launch/amcl.launch"/>
@@ -123,14 +107,31 @@
             <arg name="scan_topic" value="/scan" />
         </include>
 
-        <!-- AMCL
-        <include file="$(find turtlebot3_navigation)/launch/amcl.launch"/> -->
+        <!-- If SLAM enabled - make sure to launch teleop for remote control to be able to get the SLAM data -->
+        <!-- Map saver - once the teleop is finished launch >> rosrun map_server map_saver -f ~/map -->
+        <group if="$(arg slam)">
+            <group unless="$(arg navigation)">
+                <!-- SLAM: Gmapping, Cartographer, Hector, Karto, Frontier_exploration, RTAB-Map -->
+                <include file="$(find turtlebot_slam)/launch/turtlebot_$(arg slam_methods).launch">
+                    <arg name="model" value="$(arg model)"/>
+                    <arg name="configuration_basename" value="$(arg configuration_basename)"/>
+                </include>
+            </group>
+        </group>
 
-        <!-- move_base
-        <include file="$(find turtlebot3_navigation)/launch/move_base.launch">
-            <arg name="model" value="$(arg model)" />
-            <arg name="move_forward_only" value="$(arg move_forward_only)"/>
-        </include> -->
+        <!-- If navigation enabled -->
+        <group if="$(arg navigation)">
+            <!-- AMCL -->
+            <include file="$(find turtlebot_navigation)/launch/amcl.launch"/>
+
+            <!-- move_base -->
+            <include file="$(find turtlebot_navigation)/launch/move_base.launch">
+                <arg name="model" value="$(arg model)" />
+                <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+            </include>
+        </group>
+
+
     </group>
 
     <!-- If RVIZ enabled -->
