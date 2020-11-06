@@ -18,7 +18,8 @@
     <arg name="x_pos" default="1"/>
     <arg name="y_pos" default="-0.286"/>
     <arg name="z_pos" default="0.0"/>
-    <arg name="map_file" default="$(find twist)/maps/office_map.yaml"/>
+    <!--<arg name="map_file" default="$(find twist)/resources/maps/office_map.yaml"/>-->
+    <arg name="map_file" default="$(find twist)/resources/maps/house_map.yaml"/>
     <arg name="move_forward_only" default="false"/>
 
     <!-- Gazebo world configuration -->
@@ -28,7 +29,8 @@
         <arg name="gui" value="$(arg gui)"/>
         <arg name="headless" value="$(arg headless)"/>
         <arg name="debug" value="$(arg debug)"/>
-       <arg name="world_name" value="$(find twist)/worlds/office.world"/>
+        <!--<arg name="world_name" value="$(find twist)/resources/worlds/office.world"/>-->
+        <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_house.world"/>
     </include>
 
     <!-- Model description -->
@@ -79,7 +81,7 @@
     <!-- If webserver enabled -->
     <group if="$(arg webserver)">
         <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
-    </group> -->
+    </group>
 
     <!-- TWIST node bring-up -->
     <node pkg="twist" type="Application" required="true" output="screen" name="twist"></node>
