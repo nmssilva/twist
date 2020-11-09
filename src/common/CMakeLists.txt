@@ -14,7 +14,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})
 add_library(TWIST::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-target_include_directories(${PROJECT_NAME} INTERFACE include        )
+target_include_directories(${PROJECT_NAME} INTERFACE include)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
         3rdParty::cpptoml

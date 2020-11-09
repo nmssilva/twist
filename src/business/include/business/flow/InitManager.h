@@ -45,6 +45,11 @@ public:
      */
     void init();
 
+    /**
+     * Initializer fail handler
+     */
+    void initFailure();
+
 private:
     ros::NodeHandle nodeHandle;
 

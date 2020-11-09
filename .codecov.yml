@@ -5,6 +5,7 @@ ignore:
   - "**application**"
   - "**/application**"
   - "**/test**"
+  - "**external**"
 
 coverage:
   precision: 2
