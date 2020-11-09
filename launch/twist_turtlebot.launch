@@ -1,6 +1,7 @@
 <launch>
     <!-- Modules ON/OFF flags -->
     <arg name="rviz" default="false"/>
+    <arg name="sim" default="false"/>
     <arg name="slam" default="false"/>
     <arg name="navigation" default="true"/>
     <arg name="webserver" default="true"/>
@@ -19,69 +20,122 @@
     <arg name="y_pos" default="-0.286"/>
     <arg name="z_pos" default="0.0"/>
     <arg name="map_file" default="$(find twist)/maps/office_map.yaml"/>
+    <!-- <arg name="map_file" default="$(find twist)/maps/lfd_map.yaml"/>
+    <arg name="map_file" default="$(find twist)/maps/house_map.yaml"/>-->
     <arg name="move_forward_only" default="false"/>
 
-    <!-- Gazebo world configuration -->
-    <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <arg name="paused" value="$(arg paused)"/>
-        <arg name="use_sim_time" value="$(arg use_sim_time)"/>
-        <arg name="gui" value="$(arg gui)"/>
-        <arg name="headless" value="$(arg headless)"/>
-        <arg name="debug" value="$(arg debug)"/>
-       <arg name="world_name" value="$(find twist)/worlds/office.world"/>
-    </include>
+    <group if="$(arg sim)">
+        <include file="$(find gazebo_ros)/launch/empty_world.launch">
+            <arg name="paused" value="$(arg paused)"/>
+            <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+            <arg name="gui" value="$(arg gui)"/>
+            <arg name="headless" value="$(arg headless)"/>
+            <arg name="debug" value="$(arg debug)"/>
+            <!--<arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_house.world"/>-->
+            <arg name="world_name" value="$(find twist)/worlds/office.world"/>
+        </include>
 
-    <!-- Model description -->
-    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+        <!-- Model description -->
+        <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
 
-    <!-- Gazebo spawn -->
-    <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
+        <!-- Gazebo spawn -->
+       <node pkg="gazebo_ros" type="spawn_model" name="spawn_urdf"  args="-urdf -model turtlebot3_$(arg model) -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
 
-    <!-- TurtleBot bringup -->
-    <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
-      <arg name="model" value="$(arg model)" />
-    </include>
+        <!-- TurtleBot bringup -->
+        <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch">
+            <arg name="model" value="$(arg model)" />
+        </include>
 
-    <!-- If SLAM enabled - make sure to launch teleop for remote control to be able to get the SLAM data -->
-    <!-- Map saver - once the teleop is finished launch >> rosrun map_server map_saver -f ~/map -->
-    <group if="$(arg slam)">
-        <group unless="$(arg navigation)">
-            <!-- SLAM: Gmapping, Cartographer, Hector, Karto, Frontier_exploration, RTAB-Map -->
-            <include file="$(find turtlebot3_slam)/launch/turtlebot3_$(arg slam_methods).launch">
-                <arg name="model" value="$(arg model)"/>
-                <arg name="configuration_basename" value="$(arg configuration_basename)"/>
+        <!-- If SLAM enabled - make sure to launch teleop for remote control to be able to get the SLAM data -->
+        <!-- Map saver - once the teleop is finished launch >> rosrun map_server map_saver -f ~/map -->
+        <group if="$(arg slam)">
+            <group unless="$(arg navigation)">
+                <!-- SLAM: Gmapping, Cartographer, Hector, Karto, Frontier_exploration, RTAB-Map -->
+                <include file="$(find turtlebot3_slam)/launch/turtlebot3_$(arg slam_methods).launch">
+                    <arg name="model" value="$(arg model)"/>
+                    <arg name="configuration_basename" value="$(arg configuration_basename)"/>
+                </include>
+            </group>
+        </group>
+
+        <!-- If navigation enabled -->
+        <group if="$(arg navigation)">
+            <!-- Map server -->
+            <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+
+            <!-- AMCL -->
+            <include file="$(find turtlebot3_navigation)/launch/amcl.launch"/>
+
+            <!-- move_base -->
+            <include file="$(find turtlebot3_navigation)/launch/move_base.launch">
+                <arg name="model" value="$(arg model)" />
+                <arg name="move_forward_only" value="$(arg move_forward_only)"/>
             </include>
         </group>
     </group>
 
-    <!-- If navigation enabled -->
-    <group if="$(arg navigation)">
+    <group unless="$(arg sim)">
+        <!-- Turtlebot -->
+        <arg name="base"              default="$(env TURTLEBOT_BASE)"         doc="mobile base type [create, roomba]"/>
+        <arg name="battery"           default="$(env TURTLEBOT_BATTERY)"      doc="kernel provided locatio for battery info, use /proc/acpi/battery/BAT0 in 2.6 or earlier kernels." />
+        <arg name="stacks"            default="$(env TURTLEBOT_STACKS)"       doc="stack type displayed in visualisation/simulation [circles, hexagons]"/>
+        <arg name="3d_sensor"         default="$(env TURTLEBOT_3D_SENSOR)"    doc="3d sensor types [kinect, asux_xtion_pro]"/>
+        <arg name="simulation"        default="$(env TURTLEBOT_SIMULATION)"   doc="set flags to indicate this turtle is run in simulation mode."/>
+        <arg name="serialport"        default="$(env TURTLEBOT_SERIAL_PORT)"  doc="used by create to configure the port it is connected on [/dev/ttyUSB0, /dev/ttyS0]"/>
+
+        <param name="/use_sim_time" value="false"/>
+
+        <include file="$(find turtlebot_bringup)/launch/includes/robot.launch.xml">
+            <arg name="base" value="$(arg base)" />
+            <arg name="stacks" value="$(arg stacks)" />
+            <arg name="3d_sensor" value="$(arg 3d_sensor)" />
+        </include>
+        <include file="$(find turtlebot_bringup)/launch/includes/mobile_base.launch.xml">
+            <arg name="base" value="$(arg base)" />
+            <arg name="serialport" value="$(arg serialport)" />
+        </include>
+        <include unless="$(eval arg('battery') == 'None')" file="$(find turtlebot_bringup)/launch/includes/netbook.launch.xml">
+            <arg name="battery" value="$(arg battery)" />
+        </include>
+
+        <!-- 3D sensor -->
+        <include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
+            <arg name="rgb_processing" value="false" />
+            <arg name="depth_registration" value="false" />
+            <arg name="depth_processing" value="false" />
+
+             <!-- We must specify an absolute topic name because if not it will be prefixed by "$(arg camera)".
+            Probably is a bug in the nodelet manager: https://github.com/ros/nodelet_core/issues/7 -->
+            <arg name="scan_topic" value="/scan" />
+        </include>
+
         <!-- Map server -->
-        <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)"/>
+        <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
         <!-- AMCL -->
-        <include file="$(find turtlebot3_navigation)/launch/amcl.launch"/>
-
-        <!-- move_base -->
-        <include file="$(find turtlebot3_navigation)/launch/move_base.launch">
-            <arg name="model" value="$(arg model)" />
-            <arg name="move_forward_only" value="$(arg move_forward_only)"/>
+        <arg name="custom_amcl_launch_file" default="$(find turtlebot_navigation)/launch/includes/amcl/$(arg 3d_sensor)_amcl.launch.xml"/>
+        <arg name="initial_pose_x" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+        <arg name="initial_pose_y" default="0.0"/> <!-- Use 17.0 for willow's map in simulation -->
+        <arg name="initial_pose_a" default="0.0"/>
+        <include file="$(arg custom_amcl_launch_file)">
+            <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+            <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+            <arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
         </include>
-    </group>
 
-    <!-- If RVIZ enabled -->
-    <group if="$(arg rviz)">
-        <!-- RVIZ visualization -->
-      <node pkg="rviz" type="rviz" name="rviz" required="true"
-            args="-d $(find turtlebot3_navigation)/rviz/turtlebot3_navigation.rviz"/>
+        <!-- Move base -->
+        <arg name="custom_param_file" default="$(find turtlebot_navigation)/param/$(arg 3d_sensor)_costmap_params.yaml"/>
+        <include file="$(find turtlebot_navigation)/launch/includes/move_base.launch.xml">
+             <arg name="custom_param_file" value="$(arg custom_param_file)"/>
+        </include>
+
     </group>
 
     <!-- If webserver enabled -->
     <group if="$(arg webserver)">
         <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
-    </group> -->
+    </group>
 
     <!-- TWIST node bring-up -->
     <node pkg="twist" type="Application" required="true" output="screen" name="twist"></node>
 </launch>
-
