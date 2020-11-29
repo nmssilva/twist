@@ -143,6 +143,11 @@
         <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
     </group>
 
+    <arg name="device" default="" />
+    <node name="soundplay_node" pkg="sound_play" type="soundplay_node.py">
+        <param name="device" value="$(arg device)" />
+    </node>
+
     <!-- TWIST node bring-up -->
     <node pkg="twist" type="Application" required="true" output="screen" name="twist"></node>
 </launch>
