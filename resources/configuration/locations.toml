@@ -1,0 +1,31 @@
+# This TOML document contains the office team locations.
+
+title = "Office SIM locations"
+
+[floor1]
+  [teams]
+    apollo = [14.4, 0.24]
+    brest = [5.05, 0.55]
+    dragon = [10.15, -7.25]
+    cdc = [9.65, 0.4]
+    hermes = [-5.05, 0.6]
+    it = [111, 111]
+    pitBox = [-9.9, 0.65]
+    poseidon = [14.3, -7.6]
+    sysFunctions = [-5.2, -6.5]
+    sit1 = [-9.9, 0.65]
+    sit2 = [-9.2, -6.65]
+    xpadAutosar = [-0.1, -6.9]
+    xpadInt = [5.1, -6.9]
+
+  [meetingRooms]
+    rockstarStudio = [111, 111]
+    mastermindCourt = [0, 111]
+    scrumCastle = [0, 0]
+    fortuneTent = [-10.45, -0.55]
+
+  [other]
+    door = [19.8, -5.5]
+    kitchen = [111, 111]
+    socialRoom = [19.1, -7.1]
+    wc = [111, 111]

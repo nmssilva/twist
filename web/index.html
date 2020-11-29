@@ -65,20 +65,20 @@
                                 <h2>Room Finder</h2>
                                 <p>Find a room in the floor.</p>
                             </header>
-                            <select name="locations" id="targetLocation">
-                                <option value="BedRoom1">Bed Room 1</option>
-                                <option value="BedRoom2">Bed Room 2</option>
+                            <select name="targetLocations" id="targetLocation">
+                                <option value="BedRoomKids">Bed Room Kids</option>
+                                <option value="BedRoomSuite">Bed Room Suite</option>
                                 <option value="DinningRoom">Dinning Room</option>
                                 <option value="Hall">Hall</option>
+                                <option value="Kitchen">Kitchen</option>
                                 <option value="LivingRoom">Living Room</option>
-                                <option value="Outside">Outside</option>
-                                <option value="Kitchen1">Kitchen 1</option>
-                                <option value="Kitchen2">Kitchen 2</option>
+                                <option value="WC">WC</option>
+                                <option value="WCSuite">WC Suite</option>
                             </select>
 
                             <script type="text/javascript">
                                 var ros = new ROSLIB.Ros({
-                                    url: 'ws://localhost:9090'
+                                    url: 'ws://192.168.1.80:9090'
                                 });
                                 ros.on('connection', function () {
                                     console.log('Connected to websocket server.');
@@ -95,9 +95,9 @@
                                     messageType: 'std_msgs/String'
                                 });
                                 function getTarget() {
-                                    var location = document.getElementById("targetLocation").value;
-                                    console.log("Publishing go to " + location);
-                                    target.publish(new ROSLIB.Message({data: location}));
+                                    var targetLocation = document.getElementById("targetLocation").value;
+                                    console.log("Publishing go to " + targetLocation);
+                                    target.publish(new ROSLIB.Message({data: targetLocation}));
                                 }
                             </script>
                             <footer class="major">
@@ -135,43 +135,31 @@
                                 <h2>Bring me a Jabra/Marker</h2>
                                 <p>Where to?</p>
                             </header>
-                            <select name="locations" id="jabraLocation">
-                                <option value="BedRoom1">Bed Room 1</option>
-                                <option value="BedRoom2">Bed Room 2</option>
+                            <select name="jabraLocations" id="jabraLocation">
+                                <option value="BedRoomKids">Bed Room Kids</option>
+                                <option value="BedRoomSuite">Bed Room Suite</option>
                                 <option value="DinningRoom">Dinning Room</option>
                                 <option value="Hall">Hall</option>
+                                <option value="Kitchen">Kitchen</option>
                                 <option value="LivingRoom">Living Room</option>
-                                <option value="Outside">Outside</option>
-                                <option value="Kitchen1">Kitchen 1</option>
-                                <option value="Kitchen2">Kitchen 2</option>
+                                <option value="WC">WC</option>
+                                <option value="WCSuite">WC Suite</option>
                             </select>
                             <script type="text/javascript">
-                                var ros = new ROSLIB.Ros({
-                                    url: 'ws://localhost:9090'
-                                });
-                                ros.on('connection', function () {
-                                    console.log('Connected to websocket server.');
-                                });
-                                ros.on('error', function (error) {
-                                    console.log('Error connecting to websocket server: ', error);
-                                });
-                                ros.on('close', function () {
-                                    console.log('Connection to websocket server closed.');
-                                });
                                 var target = new ROSLIB.Topic({
                                     ros: ros,
                                     name: '/target',
                                     messageType: 'std_msgs/String'
                                 });
-                                function getTarget() {
-                                    var location = document.getElementById("jabraLocation").value;
-                                    console.log("Publishing go to " + location);
-                                    target.publish(new ROSLIB.Message({data: location}));
+                                function getJabra() {
+                                    var jabraLocation = document.getElementById("jabraLocation").value;
+                                    console.log("Publishing go to " + jabraLocation);
+                                    target.publish(new ROSLIB.Message({data: jabraLocation}));
                                 }
                             </script>
                             <footer class="major">
                                 <ul class="actions special">
-                                    <li><a class="button primary" onclick="getTarget()">Get a Jabra/Marker</a></li>
+                                    <li><a class="button primary" onclick="getJabra()">Get a Jabra/Marker</a></li>
                                 </ul>
                             </footer>
                         </section>

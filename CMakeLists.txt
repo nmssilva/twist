@@ -44,4 +44,8 @@ catkin_package(CATKIN_DEPENDS
 append_coverage_compiler_flags()
 
 add_subdirectory(src)
+
+# Header only lib that adds support for toml configuration files
+add_subdirectory(external/3rdParty/cpptoml)
+
 add_subdirectory(test)

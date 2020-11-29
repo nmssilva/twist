@@ -27,5 +27,8 @@ protected:
  * objectNotNull: assert object creation succeeded
  */
 TEST_F(InitManagerTest, objectNotNull) {
+    // For coverage and make sure the victim is still there even after reporting failure
+    victim->initFailure();
+
     ASSERT_NE(victim, nullptr);
 }
